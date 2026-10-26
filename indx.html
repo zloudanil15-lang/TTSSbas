@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Информатика викторинасы</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #102a71, #2196f3);
+    margin: 0;
+    padding: 20px;
+    color: #222;
+}
+.container {
+    max-width: 650px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 8px 25px #0004;
+}
+h1 { color: #1455a5; }
+.question {
+    font-size: 21px;
+    font-weight: bold;
+    margin: 25px 0;
+}
+button {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    background: #e7f1ff;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:hover { background: #b9d9ff; }
+#next {
+    background: #1769d2;
+    color: white;
+}
+#message { font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>💻 Информатика викторинасы</h1>
+    <p>Билимиңди текшер!</p>
+    <p id="progress"></p>
+    <div class="question" id="question"></div>
+    <div id="answers"></div>
+    <p id="message"></p>
+    <p id="score"></p>
+    <button id="next" onclick="nextQuestion()" hidden>
+        Кийинки суроо →
+    </button>
+</div>
+
+<script>
+const questions = [
+{
+ q: "1. Компьютердин мээси эмне деп аталат?",
+ a: ["Монитор", "Процессор", "Чычкан", "Баскычтоп"],
+ c: 1
+},
+{
+ q: "2. Маалыматты экранга эмне чыгарат?",
+ a: ["Принтер", "Сканер", "Монитор", "Чычкан"],
+ c: 2
+},
+{
+ q: "3. Баскычтоп эмне үчүн колдонулат?",
+ a: ["Текст терүү үчүн", "Үн угуу үчүн", "Сүрөт тартуу үчүн гана", "Кагаз чыгаруу үчүн"],
+ c: 0
+},
+{
+ q: "4. Интернет деген эмне?",
+ a: ["Оюн гана", "Дүйнөлүк компьютердик тармак", "Компьютердин бөлүгү", "Программа"],
+ c: 1
+},
+{
+ q: "5. Маалыматтын эң кичине өлчөө бирдиги кайсы?",
+ a: ["Байт", "Килобайт", "Бит", "Мегабайт"],
+ c: 2
+},
+{
+ q: "6. Компьютерге текст киргизүүчү түзүлүш кайсы?",
+ a: ["Баскычтоп", "Монитор", "Колонка", "Принтер"],
+ c: 0
+},
+{
+ q: "7. Файл деген эмне?",
+ a: ["Маалымат сакталган объект", "Компьютердин экраны", "Зым", "Чычкан"],
+ c: 0
+},
+{
+ q: "8. Компьютерде сүрөт тартуу үчүн кайсы программа колдонулат?",
+ a: ["Калькулятор", "Paint", "Блокнот", "Саат"],
+ c: 1
+},
+{
+ q: "9. Компьютердик вирустар эмне кылышы мүмкүн?",
+ a: ["Компьютерге зыян келтирет", "Компьютерди жууп берет", "Кагаз чыгарат", "Экранды чоңойтот"],
+ c: 0
+},
+{
+ q: "10. Коопсуз сырсөз кандай болушу керек?",
+ a: ["12345", "Атым гана", "Татаал жана уникалдуу", "0000"],
+ c: 2
+}
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+function showQuestion() {
+    answered = false;
+    const q = questions[current];
+    document.getElementById("progress").textContent =
+        `Суроо ${current + 1} / ${questions.length}`;
+    document.getElementById("question").textContent = q.q;
+    document.getElementById("message").textContent = "";
+    document.getElementById("score").textContent = "";
+    document.getElementById("next").hidden = true;
+
+    const answers = document.getElementById("answers");
+    answers.innerHTML = "";
+
+    q.a.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.textContent = answer;
+        button.onclick = () => checkAnswer(index);
+        answers.appendChild(button);
+    });
+}
+
+function checkAnswer(index) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[current];
+    const buttons = document.querySelectorAll("#answers button");
+
+    buttons.forEach((button, i) => {
+        button.disabled = true;
+        if (i === q.c) button.style.background = "#a5efb0";
+        else if (i === index) button.style.background = "#ffb3b3";
+    });
+
+    if (index === q.c) {
+        score++;
+        document.getElementById("message").textContent =
+            "Туура жооп! 🎉";
+    } else {
+        document.getElementById("message").textContent =
+            "Туура эмес. Туура жооп: " + q.a[q.c];
+    }
+
+    document.getElementById("score").textContent =
+        `Упай: ${score} / ${questions.length}`;
+    document.getElementById("next").hidden = false;
+    document.getElementById("next").textContent =
+        current === questions.length - 1 ? "Жыйынтыкты көрүү" : "Кийинки суроо →";
+}
+
+function nextQuestion() {
+    if (current < questions.length - 1) {
+        current++;
+        showQuestion();
+    } else {
+        document.querySelector(".container").innerHTML = `
+            <h1>🏆 Викторинанын жыйынтыгы</h1>
+            <h2>${score} / ${questions.length} упай</h2>
+            <p>${score >= 8 ? "Азаматсың! Информатиканы жакшы билесиң!" :
+                score >= 5 ? "Жакшы! Дагы машык." :
+                "Көбүрөөк окуп, кайра аракет кыл!"}</p>
+            <button onclick="location.reload()">Кайра ойноо</button>
+        `;
+    }
+}
+
+showQuestion();
+</script>
+</body>
+</html>
